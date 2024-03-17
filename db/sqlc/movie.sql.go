@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const createMovie = `-- name: CreateMovie :one
@@ -21,10 +22,10 @@ INSERT INTO movies (
 `
 
 type CreateMovieParams struct {
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	ReleaseDate sql.NullTime   `json:"release_date"`
-	Rating      sql.NullString `json:"rating"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	ReleaseDate time.Time `json:"release_date"`
+	Rating      string    `json:"rating"`
 }
 
 func (q *Queries) CreateMovie(ctx context.Context, arg CreateMovieParams) (Movie, error) {
@@ -236,16 +237,18 @@ const updateMovie = `-- name: UpdateMovie :one
 UPDATE movies
 SET name = $2,
   description = $3,
-  rating = $4
+  rating = $4,
+  release_date = $5
 WHERE id = $1
 RETURNING id, name, description, release_date, rating
 `
 
 type UpdateMovieParams struct {
-	ID          int32          `json:"id"`
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	Rating      sql.NullString `json:"rating"`
+	ID          int32     `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Rating      string    `json:"rating"`
+	ReleaseDate time.Time `json:"release_date"`
 }
 
 func (q *Queries) UpdateMovie(ctx context.Context, arg UpdateMovieParams) (Movie, error) {
@@ -254,6 +257,7 @@ func (q *Queries) UpdateMovie(ctx context.Context, arg UpdateMovieParams) (Movie
 		arg.Name,
 		arg.Description,
 		arg.Rating,
+		arg.ReleaseDate,
 	)
 	var i Movie
 	err := row.Scan(

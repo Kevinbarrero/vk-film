@@ -12,6 +12,7 @@ import (
 type Querier interface {
 	CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error)
 	CreateMovie(ctx context.Context, arg CreateMovieParams) (Movie, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteActor(ctx context.Context, id int32) error
 	DeleteMovie(ctx context.Context, id int32) error
 	GetActorMoviesList(ctx context.Context) ([]GetActorMoviesListRow, error)
@@ -20,6 +21,7 @@ type Querier interface {
 	GetMoviesByReleaseDate(ctx context.Context) ([]Movie, error)
 	GetMoviesSortedByName(ctx context.Context) ([]Movie, error)
 	GetMoviesSortedByRating(ctx context.Context) ([]Movie, error)
+	GetUser(ctx context.Context, username string) (User, error)
 	UpdateActor(ctx context.Context, arg UpdateActorParams) (Actor, error)
 	UpdateMovie(ctx context.Context, arg UpdateMovieParams) (Movie, error)
 }

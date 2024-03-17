@@ -7,7 +7,7 @@ package db
 
 import (
 	"context"
-	"database/sql"
+	"time"
 )
 
 const createActor = `-- name: CreateActor :one
@@ -20,9 +20,9 @@ INSERT INTO actors (
 `
 
 type CreateActorParams struct {
-	Name     string       `json:"name"`
-	Gender   string       `json:"gender"`
-	Birthday sql.NullTime `json:"birthday"`
+	Name     string    `json:"name"`
+	Gender   string    `json:"gender"`
+	Birthday time.Time `json:"birthday"`
 }
 
 func (q *Queries) CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error) {
@@ -93,10 +93,10 @@ RETURNING id, name, gender, birthday
 `
 
 type UpdateActorParams struct {
-	ID       int32        `json:"id"`
-	Name     string       `json:"name"`
-	Gender   string       `json:"gender"`
-	Birthday sql.NullTime `json:"birthday"`
+	ID       int32     `json:"id"`
+	Name     string    `json:"name"`
+	Gender   string    `json:"gender"`
+	Birthday time.Time `json:"birthday"`
 }
 
 func (q *Queries) UpdateActor(ctx context.Context, arg UpdateActorParams) (Actor, error) {

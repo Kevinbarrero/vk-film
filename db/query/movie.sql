@@ -11,7 +11,8 @@ INSERT INTO movies (
 UPDATE movies
 SET name = $2,
   description = $3,
-  rating = $4
+  rating = $4,
+  release_date = $5
 WHERE id = $1
 RETURNING *;
 
