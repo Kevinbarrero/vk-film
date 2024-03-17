@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=4200
+      - POSTGRES_DB=film-db
+    ports:
+      - 5432:5432
