@@ -35,7 +35,9 @@ func (server *Server) setupRouter() {
 	router := gin.Default()
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
+
 	authRoutes := router.Group("/").Use(authMiddleware(server.tokenMaker))
+	// movie routes
 	authRoutes.POST("/movie/create", server.createMovie)
 	authRoutes.PATCH("/movie/update", server.updateMovie)
 	authRoutes.DELETE("/movie/delete", server.deleteMovie)
@@ -44,6 +46,12 @@ func (server *Server) setupRouter() {
 	authRoutes.GET("/movies-sorted-by-date", server.moviesSortedByReleaseDate)
 	authRoutes.GET("/movies-sorted-by-name-fragment", server.moviesByNameFragment)
 	authRoutes.GET("/movies-sorted-by-actor-fragment", server.moviesByActorFragment)
+
+	// actor routes
+
+	authRoutes.POST("/actor/create", server.createActor)
+	authRoutes.PATCH("/actor/update", server.updateActor)
+	authRoutes.DELETE("/actor/delete", server.deleteActor)
 
 	server.router = router
 }
