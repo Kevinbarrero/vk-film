@@ -36,3 +36,82 @@ func (q *Queries) CreateActor(ctx context.Context, arg CreateActorParams) (Actor
 	)
 	return i, err
 }
+
+const deleteActor = `-- name: DeleteActor :exec
+DELETE FROM actors
+WHERE id = $1
+`
+
+func (q *Queries) DeleteActor(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteActor, id)
+	return err
+}
+
+const getActorMoviesList = `-- name: GetActorMoviesList :many
+SELECT a.name AS actor_name, m.name AS movie_name
+FROM actors a
+JOIN movie_actors ma ON a.id = ma.actor_id
+JOIN movies m ON ma.movie_id = m.id
+ORDER BY a.name, m.name
+`
+
+type GetActorMoviesListRow struct {
+	ActorName string `json:"actor_name"`
+	MovieName string `json:"movie_name"`
+}
+
+func (q *Queries) GetActorMoviesList(ctx context.Context) ([]GetActorMoviesListRow, error) {
+	rows, err := q.db.QueryContext(ctx, getActorMoviesList)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetActorMoviesListRow{}
+	for rows.Next() {
+		var i GetActorMoviesListRow
+		if err := rows.Scan(&i.ActorName, &i.MovieName); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateActor = `-- name: UpdateActor :one
+UPDATE actors
+SET name = $2,
+  gender = $3,
+  birthday = $4
+WHERE id = $1
+RETURNING id, name, gender, birthday
+`
+
+type UpdateActorParams struct {
+	ID       int32        `json:"id"`
+	Name     string       `json:"name"`
+	Gender   string       `json:"gender"`
+	Birthday sql.NullTime `json:"birthday"`
+}
+
+func (q *Queries) UpdateActor(ctx context.Context, arg UpdateActorParams) (Actor, error) {
+	row := q.db.QueryRowContext(ctx, updateActor,
+		arg.ID,
+		arg.Name,
+		arg.Gender,
+		arg.Birthday,
+	)
+	var i Actor
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Gender,
+		&i.Birthday,
+	)
+	return i, err
+}

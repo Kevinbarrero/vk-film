@@ -6,11 +6,22 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 type Querier interface {
 	CreateActor(ctx context.Context, arg CreateActorParams) (Actor, error)
 	CreateMovie(ctx context.Context, arg CreateMovieParams) (Movie, error)
+	DeleteActor(ctx context.Context, id int32) error
+	DeleteMovie(ctx context.Context, id int32) error
+	GetActorMoviesList(ctx context.Context) ([]GetActorMoviesListRow, error)
+	GetMoviesByActorFragment(ctx context.Context, dollar_1 sql.NullString) ([]Movie, error)
+	GetMoviesByNameFragment(ctx context.Context, dollar_1 sql.NullString) ([]Movie, error)
+	GetMoviesByReleaseDate(ctx context.Context) ([]Movie, error)
+	GetMoviesSortedByName(ctx context.Context) ([]Movie, error)
+	GetMoviesSortedByRating(ctx context.Context) ([]Movie, error)
+	UpdateActor(ctx context.Context, arg UpdateActorParams) (Actor, error)
+	UpdateMovie(ctx context.Context, arg UpdateMovieParams) (Movie, error)
 }
 
 var _ Querier = (*Queries)(nil)

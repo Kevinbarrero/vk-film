@@ -22,3 +22,8 @@ type Movie struct {
 	ReleaseDate sql.NullTime   `json:"release_date"`
 	Rating      sql.NullString `json:"rating"`
 }
+
+type MovieActor struct {
+	MovieID int32 `json:"movie_id"`
+	ActorID int32 `json:"actor_id"`
+}
