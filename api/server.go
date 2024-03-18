@@ -7,6 +7,7 @@ import (
 	"vk-film/token"
 	"vk-film/util"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,6 +34,13 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 
 func (server *Server) setupRouter() {
 	router := gin.Default()
+	config := cors.DefaultConfig()
+	// I set the following to allow all origins and methods, only for testing purposes, In production, it shoud be set to specific origins
+	config.AllowAllOrigins = true
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"}
+	config.AllowCredentials = true
+	config.AllowHeaders = []string{"Content-Type", "Authorization", "accept"}
+	router.Use(cors.New(config))
 	router.POST("/users", server.createUser)
 	router.POST("/users/login", server.loginUser)
 

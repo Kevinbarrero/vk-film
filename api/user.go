@@ -17,12 +17,12 @@ type createUserRequest struct {
 	// The username of the user.
 	// Required: true
 	// Example: vk-qwerty
-	Username string `json:"username" binding:"required,alphanum"`
+	Username string `json:"username" binding:"required"`
 
 	// The password of the user.
 	// Required: true
 	// Example: password123
-	Password string `json:"password" binding:"required,alphanum"`
+	Password string `json:"password" binding:"required"`
 }
 
 // userResponse represents the response body for a user.
@@ -121,7 +121,7 @@ type loginUserRequest struct {
 	// The username of the user.
 	// Required: true
 	// Example: john_doe
-	Username string `json:"username" binding:"required,alphanum"`
+	Username string `json:"username" binding:"required"`
 
 	// The password of the user.
 	// Required: true

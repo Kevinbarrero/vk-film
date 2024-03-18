@@ -162,7 +162,7 @@ type deleteActorRequest struct {
 	// The ID of the actor to delete.
 	// in: body
 	// required: true
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `form:"id" binding:"required"`
 }
 
 // deleteActor deletes an actor by ID.
@@ -176,7 +176,7 @@ type deleteActorRequest struct {
 //	404: errorResponse
 func (server *Server) deleteActor(ctx *gin.Context) {
 	var req deleteActorRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}

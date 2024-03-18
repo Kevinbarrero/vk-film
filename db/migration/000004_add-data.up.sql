@@ -27,7 +27,7 @@ VALUES
 
 INSERT INTO users (username, hashed_password, password_changed_at, role, created_at)
 VALUES
-    ('admin', 'qwerty', NOW(), 'administrator', NOW());
+    ('vk-admin', '$2a$10$v2MthEvAJ5Ugxgd2l2V/4e1bzsz7nAL31xhMz9mOT7An1vb5Y31k.', NOW(), 'administrator', NOW());
 
 
 INSERT INTO movie_actors (movie_id, actor_id)

@@ -211,7 +211,7 @@ type deleteMovieRequest struct {
 	//
 	// required: true
 	// example: 123
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `form:"id" binding:"required"`
 }
 
 // deleteMovie deletes a movie based on the provided ID.
@@ -245,7 +245,7 @@ type deleteMovieRequest struct {
 //	  description: Not found. The movie with the provided ID does not exist.
 func (server *Server) deleteMovie(ctx *gin.Context) {
 	var req deleteMovieRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -335,7 +335,7 @@ func (server *Server) moviesSortedByReleaseDate(ctx *gin.Context) {
 }
 
 type movieFragmentRequest struct {
-	Fragment string `json:"name" binding:"required"`
+	Fragment string `form:"name" binding:"required"`
 }
 
 // moviesByNameFragment retrieves movies by name fragment.
@@ -368,7 +368,7 @@ type movieFragmentRequest struct {
 //	  description: Bad request. Invalid JSON payload.
 func (server *Server) moviesByNameFragment(ctx *gin.Context) {
 	var req movieFragmentRequest
-	if err := ctx.BindJSON(&req); err != nil {
+	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -386,7 +386,7 @@ func (server *Server) moviesByNameFragment(ctx *gin.Context) {
 }
 
 type actorFragmentRequest struct {
-	Fragment string `json:"actor" binding:"required"`
+	Fragment string `form:"actor" binding:"required"`
 }
 
 // moviesByActorFragment retrieves movies by actor fragment.
@@ -425,7 +425,7 @@ type actorFragmentRequest struct {
 //	    $ref: "#/definitions/ErrorResponse"
 func (server *Server) moviesByActorFragment(ctx *gin.Context) {
 	var req actorFragmentRequest
-	if err := ctx.BindJSON(&req); err != nil {
+	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}

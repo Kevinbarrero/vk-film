@@ -1,4 +1,6 @@
-host: localhost:8080
+host: "localhost:8080"
+schemes:
+    - http
 securityDefinitions:
     Bearer:
         type: apiKey
@@ -130,7 +132,7 @@ definitions:
                 type: string
             release_date:
                 description: The release date of the movie.
-                example: "1999-03-31"
+                example: "2012-07-16T00:00:00Z"
                 format: date-time
                 type: string
         type: object
@@ -173,7 +175,7 @@ definitions:
             release_date:
                 description: The release date of the movie.
                 format: date
-                example: "2010-07-16"
+                example: "2012-07-16T00:00:00Z"
             rating:
                 description: The rating of the movie.
                 example: "8.8"
@@ -181,283 +183,9 @@ definitions:
         title: userRequest represents the request body for a user.
 info: {}
 paths:
-    /actors:
-        delete:
-            security:
-                - Bearer: []
-            consumes: 
-                - application/json
-            operationId: deleteActor
-            parameters: 
-                - in: body
-                  schema:
-                      type: object
-                      properties:
-                          id:
-                            type: integer
-                            example: 1
-            produces:
-                - application/json
-            responses:
-                200:
-                    schema:
-                        type: object
-                        properties:
-                            id:
-                                type: integer
-                                format: int32
-                                example: 1
-                400:
-                    $ref: '#/responses/error400Response'
-                403:
-                    $ref: '#/responses/error403Response'
-                404:
-                    $ref: '#/responses/error404Response'
-            summary: Deletes an actor by ID.
-            tags:
-                - actors
-        post:
-            operationId: createActor
-            parameters:
-                - in: body
-                  name: actor
-                  schema:
-                      $ref: '#/definitions/actorRequest'
-            produces:
-                - application/json
-            responses:
-                "200":
-                    $ref: '#/responses/actor'
-                "400":
-                    $ref: '#/responses/error400Response'
-                "401":
-                    $ref: '#/responses/error401Response'
-                "500":
-                    $ref: '#/responses/error500Response'
-            summary: Creates a new actor.
-            tags:
-                - actors
-        patch:
-            operationId: updateActor
-            consumes:
-                - application/json
-            parameters:
-                - in: body
-                  name: actor
-                  schema:
-                      $ref: '#/definitions/actor'
-            produces:
-                - application/json
-            responses:
-                200:
-                    $ref: '#/responses/actor'
-                400:
-                    $ref: '#/responses/error400Response'
-                403:
-                    $ref: '#/responses/error403Response'
-                404:
-                    $ref: '#/responses/error404Response'
-                500:
-                    $ref: '#/responses/error500Response'
-            summary: Updates an existing actor.
-            tags:
-                - actors
-    /actors-movies:
-        get:
-            operationId: actorsWithMovies
-            produces:
-                - application/json
-            summary: Gets all actors with their movies.
-            tags:
-                - actors
-            responses:
-                200:
-                    $ref: '#/responses/actorsWithMovies'
-                401:
-                    $ref: '#/responses/error401Response'
-                500:
-                    $ref: '#/responses/error500Response'
-
-    /movie/create:
-        post:
-            operationId: createMovie
-            consumes:
-                - application/json
-            parameters:
-                - in: body
-                  name: movie
-                  schema:
-                    $ref: '#/definitions/createMovieRequest'
-            produces:
-                - application/json
-            summary: Creates a new movie with the provided details.
-            tags:
-                - movies
-            responses:
-                200:
-                    $ref: '#/responses/movieResponse'
-                400:
-                    $ref: '#/responses/error400Response'
-                403:
-                    $ref: '#/responses/error403Response'
-                404:
-                    $ref: '#/responses/error404Response'
-                500:
-                    $ref: '#/responses/error500Response'
-
-    /movie/delete:
-        delete:
-            operationId: deleteMovie
-            parameters:
-                  - in: body
-                    name: id
-                    schema:
-                        $ref: '#/definitions/deleteMovieRequest'
-            produces:
-                - application/json
-            summary: Delete a movie with the provided ID.
-            responses:
-                200:
-                    schema:
-                        type: object
-                        properties:
-                            id:
-                                type: integer
-                                format: int32
-                                example: 1
-                400:
-                    $ref: '#/responses/error400Response'
-                403:
-                    $ref: '#/responses/error403Response'
-                404:
-                    $ref: '#/responses/error404Response'
-            tags:
-                - movies
-    /movie/update:
-        patch:
-            operationId: updateMovie
-            consumes:
-                - application/json
-            summary: Updates a movie with the provided details.
-            parameters:
-                - in: body
-                  name: movie
-                  schema:
-                    $ref: '#/definitions/movie'
-            produces:
-                - application/json
-            responses:
-                200:
-                    $ref: '#/responses/movieResponse'
-                400:
-                    $ref: '#/responses/error400Response'
-                403:
-                    $ref: '#/responses/error403Response'
-                404:
-                    $ref: '#/responses/error404Response'
-                500:
-                    $ref: '#/responses/error500Response'
-
-            tags:
-                - movies
-    /movies:
-        get:
-            operationId: moviesSortedByRating
-            summary: Retrieves movies sorted by rating.
-            tags:
-                - movies
-            responses:
-                200:
-                    $ref: '#/responses/allMoviesRespose'
-                401:
-                    $ref: '#/responses/error401Response'
-                500:
-                    $ref: '#/responses/error500Response'
-    /movies/by-actor-fragment:
-
-        get:
-            consumes:
-                - application/json
-            operationId: moviesByActorFragment
-            parameters:
-                - in: body
-                  schema:
-                      type: object
-                      properties:
-                          actor:
-                              type: string
-                              example: Leonardo
-                            
-                  description: The name fragment to search for.
-                  required: true
-            produces:
-                - application/json
-            summary: Retrieves movies by actor fragment.
-            tags:
-                - movies
-            responses:
-                200:
-                    $ref: '#/responses/allMoviesRespose'
-                401:
-                    $ref: '#/responses/error401Response'
-                500:
-                    $ref: '#/responses/error500Response'
-    /movies/by-date:
-        get:
-            operationId: moviesSortedByReleaseDate
-            summary: Retrieves movies sorted by release date.
-            tags:
-                - movies
-            responses:
-                200:
-                    $ref: '#/responses/allMoviesRespose'
-                401:
-                    $ref: '#/responses/error401Response'
-                500:
-                    $ref: '#/responses/error500Response'
-    /movies/by-name:
-        get:
-            operationId: moviesSortedByName
-            summary: Retrieves movies sorted by name.
-            tags:
-                - movies
-            responses:
-                200:
-                    $ref: '#/responses/allMoviesRespose'
-                401:
-                    $ref: '#/responses/error401Response'
-                500:
-                    $ref: '#/responses/error500Response'
-    /movies/by-name-fragment:
-        get:
-            consumes:
-                - application/json
-            operationId: moviesByNameFragment
-            parameters:
-                - in: body
-                  schema:
-                      type: object
-                      properties:
-                          name:
-                              type: string
-                              example: inception
-                            
-                  description: The name fragment to search for.
-                  required: true
-            produces:
-                - application/json
-            summary: Retrieves movies by name fragment.
-            tags:
-                - movies
-            responses:
-                200:
-                    $ref: '#/responses/allMoviesRespose'
-                401:
-                    $ref: '#/responses/error401Response'
-                500:
-                    $ref: '#/responses/error500Response'
     /users:
         post:
+
             operationId: createUser
             consumes:
                 - application/json
@@ -507,6 +235,286 @@ paths:
                     $ref: '#/responses/error500Response'
             tags:
                 - users
+    /actors:
+        delete:
+            security:
+                - Bearer: []
+            consumes: 
+                - application/json
+            operationId: deleteActor
+            parameters: 
+                - in: query
+                  name: id
+                  required: true
+                  description: The ID of the actor to be deleted.
+            produces:
+                - application/json
+            responses:
+                200:
+                    schema:
+                        type: object
+                        properties:
+                            id:
+                                type: integer
+                                format: int32
+                                example: 1
+                400:
+                    $ref: '#/responses/error400Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                404:
+                    $ref: '#/responses/error404Response'
+            summary: Deletes an actor by ID, ONLY FOR ADMINISTRATORS.
+            tags:
+                - actors
+        post:
+            security:
+                - Bearer: []
+            operationId: createActor
+            parameters:
+                - in: body
+                  name: actor
+                  schema:
+                      $ref: '#/definitions/actorRequest'
+            produces:
+                - application/json
+            responses:
+                "200":
+                    $ref: '#/responses/actor'
+                "400":
+                    $ref: '#/responses/error400Response'
+                "401":
+                    $ref: '#/responses/error401Response'
+                "500":
+                    $ref: '#/responses/error500Response'
+            summary: Creates a new actor, ONLY FOR ADMINISTRATORS.
+            tags:
+                - actors
+        patch:
+            security:
+                - Bearer: []
+            operationId: updateActor
+            consumes:
+                - application/json
+            parameters:
+                - in: body
+                  name: actor
+                  schema:
+                      $ref: '#/definitions/actor'
+            produces:
+                - application/json
+            responses:
+                200:
+                    $ref: '#/responses/actor'
+                400:
+                    $ref: '#/responses/error400Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                404:
+                    $ref: '#/responses/error404Response'
+                500:
+                    $ref: '#/responses/error500Response'
+            summary: Updates an existing actor, ONLY FOR ADMINISTRATORS.
+            tags:
+                - actors
+    /actors-movies:
+        get:
+            security:
+                - Bearer: []
+            operationId: actorsWithMovies
+            produces:
+                - application/json
+            summary: Gets all actors with their movies.
+            tags:
+                - actors
+            responses:
+                200:
+                    $ref: '#/responses/actorsWithMovies'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+
+    /movie/create:
+        post:
+            security:
+                - Bearer: []
+            operationId: createMovie
+            consumes:
+                - application/json
+            parameters:
+                - in: body
+                  name: movie
+                  schema:
+                    $ref: '#/definitions/createMovieRequest'
+            produces:
+                - application/json
+            summary: Creates a new movie with the provided details, ONLY FOR ADMINISTRATORS.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/movieResponse'
+                400:
+                    $ref: '#/responses/error400Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                404:
+                    $ref: '#/responses/error404Response'
+                500:
+                    $ref: '#/responses/error500Response'
+
+    /movie/delete:
+        delete:
+            security:
+                - Bearer: []
+            operationId: deleteMovie
+            parameters:
+                  - in: query
+                    name: id
+                    required: true
+            produces:
+                - application/json
+            summary: Delete a movie with the provided ID, ONLY FOR ADMINISTRATORS.
+            responses:
+                200:
+                    schema:
+                        type: object
+                        properties:
+                            id:
+                                type: integer
+                                format: int32
+                                example: 1
+                400:
+                    $ref: '#/responses/error400Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                404:
+                    $ref: '#/responses/error404Response'
+            tags:
+                - movies
+    /movie/update:
+        patch:
+            security:
+                - Bearer: []
+            operationId: updateMovie
+            consumes:
+                - application/json
+            summary: Updates a movie with the provided details, ONLY FOR ADMINISTRATORS.
+            parameters:
+                - in: body
+                  name: movie
+                  schema:
+                    $ref: '#/definitions/movie'
+            produces:
+                - application/json
+            responses:
+                200:
+                    $ref: '#/responses/movieResponse'
+                400:
+                    $ref: '#/responses/error400Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                404:
+                    $ref: '#/responses/error404Response'
+                500:
+                    $ref: '#/responses/error500Response'
+
+            tags:
+                - movies
+    /movies:
+        get:
+            security:
+                - Bearer: []
+            operationId: moviesSortedByRating
+            summary: Retrieves movies sorted by rating.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/allMoviesRespose'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+    /movies/by-actor-fragment:
+        get:
+            security:
+                - Bearer: []
+            consumes:
+                - application/json
+            operationId: moviesByActorFragment
+            parameters:
+                - in: query
+                  name: actor
+                  required: true
+                  description: The actor fragment to search for.
+            produces:
+                - application/json
+            summary: Retrieves movies by actor fragment.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/allMoviesRespose'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+    /movies/by-date:
+        get:
+            security:
+                - Bearer: []
+            operationId: moviesSortedByReleaseDate
+            summary: Retrieves movies sorted by release date.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/allMoviesRespose'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+    /movies/by-name:
+        get:
+            security:
+                - Bearer: []
+            operationId: moviesSortedByName
+            summary: Retrieves movies sorted by name.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/allMoviesRespose'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+    /movies/by-name-fragment:
+        get:
+            security:
+                - Bearer: []
+            consumes:
+                - application/json
+            operationId: moviesByNameFragment
+            parameters:
+                - in: query
+                  name: name
+                  required: true
+                  description: The movie fragment to search for.
+            produces:
+                - application/json
+            summary: Retrieves movies by name fragment.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/allMoviesRespose'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
 responses:
     actor:
         description: actorResponse represents the response body for an actor.
