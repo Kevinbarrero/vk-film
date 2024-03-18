@@ -1,4 +1,12 @@
 host: "localhost:8080"
+info:
+    title: "VK Film API"
+    description: |
+        This API provides endpoints for managing movies and actors.
+
+        To test administrator endpoints, you can use the following credentials:
+        Username: vk-admin
+        Password: vk-password
 schemes:
     - http
 securityDefinitions:
