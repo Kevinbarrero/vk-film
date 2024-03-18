@@ -118,9 +118,9 @@ type updateActorRequest struct {
 //		'400':
 //		  description: Bad request. The request body is missing or invalid.
 //		'403':
-//		  description: Forbidden. Only admins have permission to update movies.
+//		  description: Forbidden. Only admins have permission to update actors.
 //		'404':
-//		  description: Not found. The movie with the provided ID does not exist.
+//		  description: Not found. The actor with the provided ID does not exist.
 //	 '500':
 //		  description: Internal server error. Something went wrong while processing the request.
 func (server *Server) updateActor(ctx *gin.Context) {

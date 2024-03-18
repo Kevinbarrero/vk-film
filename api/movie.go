@@ -243,8 +243,6 @@ type deleteMovieRequest struct {
 //	  description: Forbidden. The user does not have permission to delete movies.
 //	'404':
 //	  description: Not found. The movie with the provided ID does not exist.
-//	'500':
-//	  description: Internal server error. Something went wrong while processing the request.
 func (server *Server) deleteMovie(ctx *gin.Context) {
 	var req deleteMovieRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

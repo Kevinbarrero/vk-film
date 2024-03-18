@@ -1,3 +1,10 @@
+host: localhost:8080
+securityDefinitions:
+    Bearer:
+        type: apiKey
+        name: Authorization
+        in: header
+        description: enter the token with the Bearer prefix e.g. Bearer eyJhbGci...
 definitions:
     user:
         properties:
@@ -21,7 +28,73 @@ definitions:
                 type: string
         title: userResponse represents the response body for a user.
         type: object
+    actor:
+        title: actorResponse represents the response body for an actor.
+        type: object
+        properties:
+            birthday:
+                description: The birthday of the actor.
+                example: "2000-01-01T00:00:00Z"
+                format: date-time
+                type: string
+            gender:
+                description: 'The gender of the actor, can be: ["male", "female", "other"].'
+                example: male
+                type: string
+            id:
+                description: The ID of the actor.
+                example: 1
+                format: int32
+                type: integer
+            name:
+                description: The name of the actor.
+                example: Leonardo Di Caprio
+                type: string
+    actorsWithMovies:
+        type: array
+        items:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int32
+                    example: 1
+                name:
+                    type: string
+                    example: Leonardo Di Caprio
+                    description: The name of the actor.
+                gender:
+                    type: string
+                    example: male
+                    description: The gender of the actor.
+                birthday:
+                    type: string
+                    example: "2000-01-01T00:00:00Z"
+                    description: The birthday of the actor.
+                movies:
+                    type: array
+                    items:
+                        $ref: '#/definitions/movie'
 
+        title: allActorsResponse represents the response body for all actors.
+
+    actorRequest:
+        type: object
+        title: actorRequest represents the request body for an actor.
+        properties:
+            name:
+                description: The name of the actor.
+                example: Leonardo Di Caprio
+                type: string
+            birthday:
+                description: The birthday of the actor.
+                example: "2000-01-01T00:00:00Z"
+                format: date-time
+                type: string
+            gender:
+                description: 'The gender of the actor, can be: ["male", "female", "other"].'
+                example: male
+                type: string
     userRequest:
         type: object
         required: 
@@ -110,95 +183,101 @@ info: {}
 paths:
     /actors:
         delete:
+            security:
+                - Bearer: []
+            consumes: 
+                - application/json
             operationId: deleteActor
-            parameters:
-                - description: The ID of the actor to delete.
-                  in: body
-                  name: id
-                  required: true
+            parameters: 
+                - in: body
                   schema:
-                    format: int32
-                    type: integer
-                  x-go-name: ID
+                      type: object
+                      properties:
+                          id:
+                            type: integer
+                            example: 1
+            produces:
+                - application/json
             responses:
-                "204":
-                    $ref: '#/responses/noContentResponse'
-                "400":
-                    $ref: '#/responses/errorResponse'
-                "403":
-                    $ref: '#/responses/errorResponse'
-                "404":
-                    $ref: '#/responses/errorResponse'
+                200:
+                    schema:
+                        type: object
+                        properties:
+                            id:
+                                type: integer
+                                format: int32
+                                example: 1
+                400:
+                    $ref: '#/responses/error400Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                404:
+                    $ref: '#/responses/error404Response'
             summary: Deletes an actor by ID.
             tags:
                 - actors
         post:
             operationId: createActor
             parameters:
-                - description: The name of the actor.
-                  in: query
-                  name: name
-                  required: true
-                  type: string
-                  x-go-name: Name
-                - description: The gender of the actor.
-                  in: query
-                  name: gender
-                  required: true
-                  type: string
-                  x-go-name: Gender
-                - description: The birthday of the actor.
-                  format: date-time
-                  in: query
-                  name: birthday
-                  required: true
-                  type: string
-                  x-go-name: Birthday
+                - in: body
+                  name: actor
+                  schema:
+                      $ref: '#/definitions/actorRequest'
+            produces:
+                - application/json
             responses:
                 "200":
-                    $ref: '#/responses/actorResponse'
+                    $ref: '#/responses/actor'
                 "400":
-                    $ref: '#/responses/errorResponse'
+                    $ref: '#/responses/error400Response'
                 "401":
-                    $ref: '#/responses/errorResponse'
+                    $ref: '#/responses/error401Response'
                 "500":
-                    $ref: '#/responses/errorResponse'
+                    $ref: '#/responses/error500Response'
             summary: Creates a new actor.
             tags:
                 - actors
-        put:
+        patch:
             operationId: updateActor
+            consumes:
+                - application/json
             parameters:
-                - description: The ID of the actor to update.
-                  format: int32
-                  in: query
-                  name: id
-                  required: true
-                  type: integer
-                  x-go-name: ID
-                - description: The name of the actor.
-                  example: John Doe
-                  in: query
-                  name: name
-                  type: string
-                  x-go-name: Name
-                - description: The gender of the actor.
-                  example: male
-                  in: query
-                  name: gender
-                  type: string
-                  x-go-name: Gender
-                - description: The birthday of the actor.
-                  example: "2000-01-01T00:00:00Z"
-                  format: date-time
-                  in: query
-                  name: birthday
-                  type: string
-                  x-go-name: Birthday
-            responses: {}
+                - in: body
+                  name: actor
+                  schema:
+                      $ref: '#/definitions/actor'
+            produces:
+                - application/json
+            responses:
+                200:
+                    $ref: '#/responses/actor'
+                400:
+                    $ref: '#/responses/error400Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                404:
+                    $ref: '#/responses/error404Response'
+                500:
+                    $ref: '#/responses/error500Response'
             summary: Updates an existing actor.
             tags:
                 - actors
+    /actors-movies:
+        get:
+            operationId: actorsWithMovies
+            produces:
+                - application/json
+            summary: Gets all actors with their movies.
+            tags:
+                - actors
+            responses:
+                200:
+                    $ref: '#/responses/actorsWithMovies'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+
     /movie/create:
         post:
             operationId: createMovie
@@ -246,6 +325,12 @@ paths:
                                 type: integer
                                 format: int32
                                 example: 1
+                400:
+                    $ref: '#/responses/error400Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                404:
+                    $ref: '#/responses/error404Response'
             tags:
                 - movies
     /movie/update:
@@ -323,6 +408,13 @@ paths:
             summary: Retrieves movies sorted by release date.
             tags:
                 - movies
+            responses:
+                200:
+                    $ref: '#/responses/allMoviesRespose'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
     /movies/by-name:
         get:
             operationId: moviesSortedByName
@@ -418,25 +510,19 @@ paths:
 responses:
     actor:
         description: actorResponse represents the response body for an actor.
-        headers:
-            birthday:
-                description: The birthday of the actor.
-                example: "2000-01-01T00:00:00Z"
-                format: date-time
-                type: string
-            gender:
-                description: 'The gender of the actor, can be: ["male", "female", "other"].'
-                example: male
-                type: string
-            id:
-                description: The ID of the actor.
-                example: 1
-                format: int32
-                type: integer
-            name:
-                description: The name of the actor.
-                example: Leonardo Di Caprio
-                type: string
+        properties:
+            actor:
+                description: The actor information.
+        schema:
+            $ref: '#/definitions/actor'
+    actorsWithMovies:
+        description: actorsWithMoviesResponse represents the response body for all actors with movies.
+        properties:
+            actors:
+                description: The list of actors.
+        schema:
+            $ref: '#/definitions/actorsWithMovies'    
+
     loginUser:
         description: loginUserResponse represents the response body for logging in a user.
         headers:
