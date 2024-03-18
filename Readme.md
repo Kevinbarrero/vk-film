@@ -9,6 +9,7 @@ This project is a movie server that provides endpoints for managing movies and a
 - Docker
 - Docker Compose
 - Make
+- Migrate
 
 ## Getting Started
 
