@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
@@ -48,16 +49,26 @@ func (q *Queries) DeleteActor(ctx context.Context, id int32) error {
 }
 
 const getActorMoviesList = `-- name: GetActorMoviesList :many
-SELECT a.name AS actor_name, m.name AS movie_name
-FROM actors a
-JOIN movie_actors ma ON a.id = ma.actor_id
-JOIN movies m ON ma.movie_id = m.id
-ORDER BY a.name, m.name
+SELECT
+    a.id AS actor_id,
+    a.name AS actor_name,
+    m.id AS movie_id,
+    m.name AS movie_name
+FROM
+    actors a
+LEFT JOIN
+    movie_actors ma ON a.id = ma.actor_id
+LEFT JOIN
+    movies m ON ma.movie_id = m.id
+ORDER BY
+    a.id, m.id
 `
 
 type GetActorMoviesListRow struct {
-	ActorName string `json:"actor_name"`
-	MovieName string `json:"movie_name"`
+	ActorID   int32          `json:"actor_id"`
+	ActorName string         `json:"actor_name"`
+	MovieID   sql.NullInt32  `json:"movie_id"`
+	MovieName sql.NullString `json:"movie_name"`
 }
 
 func (q *Queries) GetActorMoviesList(ctx context.Context) ([]GetActorMoviesListRow, error) {
@@ -69,7 +80,12 @@ func (q *Queries) GetActorMoviesList(ctx context.Context) ([]GetActorMoviesListR
 	items := []GetActorMoviesListRow{}
 	for rows.Next() {
 		var i GetActorMoviesListRow
-		if err := rows.Scan(&i.ActorName, &i.MovieName); err != nil {
+		if err := rows.Scan(
+			&i.ActorID,
+			&i.ActorName,
+			&i.MovieID,
+			&i.MovieName,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

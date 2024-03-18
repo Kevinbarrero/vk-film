@@ -1,0 +1,485 @@
+definitions:
+    user:
+        properties:
+            created_at:
+                description: The timestamp when the user was created.
+                example: '"2022-03-17T09:00:00Z"'
+                format: date-time
+                type: string
+            password_changed_at:
+                description: The timestamp when the password was last changed.
+                example: '"2022-03-17T10:00:00Z"'
+                format: date-time
+                type: string
+            role:
+                description: The role of the user.
+                example: administrator
+                type: string
+            username:
+                description: The username of the user.
+                example: vk-user
+                type: string
+        title: userResponse represents the response body for a user.
+        type: object
+
+    userRequest:
+        type: object
+        required: 
+            - username
+            - password
+        properties:
+            username:
+                description: The username of the user.
+                example: vk-user
+                type: string
+            password:
+                description: The password of the user.
+                example: password
+                type: string
+    movie:
+        properties:
+            description:
+                description: The description of the movie.
+                example: A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.
+                type: string
+            id:
+                description: The ID of the movie.
+                example: 123
+                format: int32
+                type: integer
+            name:
+                description: The name of the movie.
+                example: The Matrix
+                type: string
+            rating:
+                description: The rating of the movie.
+                example: "8.7"
+                type: string
+            release_date:
+                description: The release date of the movie.
+                example: "1999-03-31"
+                format: date-time
+                type: string
+        type: object
+        title: movieResponse represents the response for a movie.
+    allMovies:
+        type: array
+        items:
+            $ref: '#/definitions/movie'
+        title: allMoviesResponse represents the response body for all movies.
+
+    deleteMovieRequest:
+        type: object
+        required:
+            - id
+        properties:
+            id:
+             description: The ID of the movie to be deleted.
+             example: 123
+             format: int32
+             type: integer
+        title: deleteMovieRequest represents the request body for deleting a movie.
+
+
+    createMovieRequest:
+        type: object
+        required: 
+            - name
+            - description
+            - release_date
+            - rating
+        properties:
+            name:
+                description: The name of the movie.
+                example: Inception
+                type: string
+            description:
+                description: The description of the movie.
+                example: A mind-bending action thriller
+                type: string
+            release_date:
+                description: The release date of the movie.
+                format: date
+                example: "2010-07-16"
+            rating:
+                description: The rating of the movie.
+                example: "8.8"
+                type: string
+        title: userRequest represents the request body for a user.
+info: {}
+paths:
+    /actors:
+        delete:
+            operationId: deleteActor
+            parameters:
+                - description: The ID of the actor to delete.
+                  in: body
+                  name: id
+                  required: true
+                  schema:
+                    format: int32
+                    type: integer
+                  x-go-name: ID
+            responses:
+                "204":
+                    $ref: '#/responses/noContentResponse'
+                "400":
+                    $ref: '#/responses/errorResponse'
+                "403":
+                    $ref: '#/responses/errorResponse'
+                "404":
+                    $ref: '#/responses/errorResponse'
+            summary: Deletes an actor by ID.
+            tags:
+                - actors
+        post:
+            operationId: createActor
+            parameters:
+                - description: The name of the actor.
+                  in: query
+                  name: name
+                  required: true
+                  type: string
+                  x-go-name: Name
+                - description: The gender of the actor.
+                  in: query
+                  name: gender
+                  required: true
+                  type: string
+                  x-go-name: Gender
+                - description: The birthday of the actor.
+                  format: date-time
+                  in: query
+                  name: birthday
+                  required: true
+                  type: string
+                  x-go-name: Birthday
+            responses:
+                "200":
+                    $ref: '#/responses/actorResponse'
+                "400":
+                    $ref: '#/responses/errorResponse'
+                "401":
+                    $ref: '#/responses/errorResponse'
+                "500":
+                    $ref: '#/responses/errorResponse'
+            summary: Creates a new actor.
+            tags:
+                - actors
+        put:
+            operationId: updateActor
+            parameters:
+                - description: The ID of the actor to update.
+                  format: int32
+                  in: query
+                  name: id
+                  required: true
+                  type: integer
+                  x-go-name: ID
+                - description: The name of the actor.
+                  example: John Doe
+                  in: query
+                  name: name
+                  type: string
+                  x-go-name: Name
+                - description: The gender of the actor.
+                  example: male
+                  in: query
+                  name: gender
+                  type: string
+                  x-go-name: Gender
+                - description: The birthday of the actor.
+                  example: "2000-01-01T00:00:00Z"
+                  format: date-time
+                  in: query
+                  name: birthday
+                  type: string
+                  x-go-name: Birthday
+            responses: {}
+            summary: Updates an existing actor.
+            tags:
+                - actors
+    /movie/create:
+        post:
+            operationId: createMovie
+            consumes:
+                - application/json
+            parameters:
+                - in: body
+                  name: movie
+                  schema:
+                    $ref: '#/definitions/createMovieRequest'
+            produces:
+                - application/json
+            summary: Creates a new movie with the provided details.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/movieResponse'
+                400:
+                    $ref: '#/responses/error400Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                404:
+                    $ref: '#/responses/error404Response'
+                500:
+                    $ref: '#/responses/error500Response'
+
+    /movie/delete:
+        delete:
+            operationId: deleteMovie
+            parameters:
+                  - in: body
+                    name: id
+                    schema:
+                        $ref: '#/definitions/deleteMovieRequest'
+            produces:
+                - application/json
+            summary: Delete a movie with the provided ID.
+            responses:
+                200:
+                    schema:
+                        type: object
+                        properties:
+                            id:
+                                type: integer
+                                format: int32
+                                example: 1
+            tags:
+                - movies
+    /movie/update:
+        patch:
+            operationId: updateMovie
+            consumes:
+                - application/json
+            summary: Updates a movie with the provided details.
+            parameters:
+                - in: body
+                  name: movie
+                  schema:
+                    $ref: '#/definitions/movie'
+            produces:
+                - application/json
+            responses:
+                200:
+                    $ref: '#/responses/movieResponse'
+                400:
+                    $ref: '#/responses/error400Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                404:
+                    $ref: '#/responses/error404Response'
+                500:
+                    $ref: '#/responses/error500Response'
+
+            tags:
+                - movies
+    /movies:
+        get:
+            operationId: moviesSortedByRating
+            summary: Retrieves movies sorted by rating.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/allMoviesRespose'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+    /movies/by-actor-fragment:
+
+        get:
+            consumes:
+                - application/json
+            operationId: moviesByActorFragment
+            parameters:
+                - in: body
+                  schema:
+                      type: object
+                      properties:
+                          actor:
+                              type: string
+                              example: Leonardo
+                            
+                  description: The name fragment to search for.
+                  required: true
+            produces:
+                - application/json
+            summary: Retrieves movies by actor fragment.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/allMoviesRespose'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+    /movies/by-date:
+        get:
+            operationId: moviesSortedByReleaseDate
+            summary: Retrieves movies sorted by release date.
+            tags:
+                - movies
+    /movies/by-name:
+        get:
+            operationId: moviesSortedByName
+            summary: Retrieves movies sorted by name.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/allMoviesRespose'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+    /movies/by-name-fragment:
+        get:
+            consumes:
+                - application/json
+            operationId: moviesByNameFragment
+            parameters:
+                - in: body
+                  schema:
+                      type: object
+                      properties:
+                          name:
+                              type: string
+                              example: inception
+                            
+                  description: The name fragment to search for.
+                  required: true
+            produces:
+                - application/json
+            summary: Retrieves movies by name fragment.
+            tags:
+                - movies
+            responses:
+                200:
+                    $ref: '#/responses/allMoviesRespose'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+    /users:
+        post:
+            operationId: createUser
+            consumes:
+                - application/json
+            operationId: createUser
+            summary: Creates a new user.
+            parameters:
+                - in: body
+                  name: user
+                  description: The user to create.
+                  schema:
+                    $ref: '#/definitions/userRequest'
+            produces:
+                - application/json
+            tags:
+                - users
+            responses:
+                200:
+                    $ref: '#/responses/userResponse'
+                400:
+                    $ref: '#/responses/error400Response'
+                401:
+                    $ref: '#/responses/error401Response'
+                403:
+                    $ref: '#/responses/error403Response'
+                500:
+                    $ref: '#/responses/error500Response'
+    /users/login:
+        post:
+            operationId: loginUser
+            summary: Logs in a user.
+            parameters:
+                - in: body
+                  name: user
+                  description: The user to log in.
+                  schema:
+                    $ref: '#/definitions/userRequest'
+            produces:
+                - application/json
+            responses:
+                200:
+                    $ref: '#/responses/loginUser'
+                400:
+                    $ref: '#/responses/error400Response'
+                401:
+                    $ref: '#/responses/error401Response'
+                500:
+                    $ref: '#/responses/error500Response'
+            tags:
+                - users
+responses:
+    actor:
+        description: actorResponse represents the response body for an actor.
+        headers:
+            birthday:
+                description: The birthday of the actor.
+                example: "2000-01-01T00:00:00Z"
+                format: date-time
+                type: string
+            gender:
+                description: 'The gender of the actor, can be: ["male", "female", "other"].'
+                example: male
+                type: string
+            id:
+                description: The ID of the actor.
+                example: 1
+                format: int32
+                type: integer
+            name:
+                description: The name of the actor.
+                example: Leonardo Di Caprio
+                type: string
+    loginUser:
+        description: loginUserResponse represents the response body for logging in a user.
+        headers:
+            access_token:
+                description: The access token for the user.
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im...
+                type: string
+        properties:
+            user:
+                description: The user information.
+        schema:
+            $ref: '#/definitions/user'
+    allMoviesRespose:
+        description: allMoviesResponse represents the response body for all movies.
+        properties:
+            movies:
+                description: The list of movies.
+        schema:
+            $ref: '#/definitions/allMovies'
+
+    movieResponse:
+        properties:
+            movie:
+                description: movieResponse represents the response for a movie.
+        schema:
+            $ref: '#/definitions/movie'
+    userResponse:
+        type: object
+        description: userResponse represents the response body for a user.
+        properties:
+            user:
+                description: User Information.
+        schema:
+            $ref: '#/definitions/user'
+
+    error400Response:
+        description: Bad Request.
+    error401Response:
+        description: Unauthorized.
+    error403Response:
+        description: Forbidden.
+    error404Response:
+        description: Not Found.
+    error500Response:
+        description: Internal Server Error.
+swagger: "2.0"

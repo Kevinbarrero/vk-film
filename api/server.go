@@ -42,16 +42,17 @@ func (server *Server) setupRouter() {
 	authRoutes.PATCH("/movie/update", server.updateMovie)
 	authRoutes.DELETE("/movie/delete", server.deleteMovie)
 	authRoutes.GET("/movies", server.moviesSortedByRating)
-	authRoutes.GET("/movies-sorted-by-name", server.moviesSortedByName)
-	authRoutes.GET("/movies-sorted-by-date", server.moviesSortedByReleaseDate)
-	authRoutes.GET("/movies-sorted-by-name-fragment", server.moviesByNameFragment)
-	authRoutes.GET("/movies-sorted-by-actor-fragment", server.moviesByActorFragment)
+	authRoutes.GET("/movies/by-name", server.moviesSortedByName)
+	authRoutes.GET("/movies/by-date", server.moviesSortedByReleaseDate)
+	authRoutes.GET("/movies/by-name-fragment", server.moviesByNameFragment)
+	authRoutes.GET("/movies/by-actor-fragment", server.moviesByActorFragment)
 
 	// actor routes
 
 	authRoutes.POST("/actor/create", server.createActor)
 	authRoutes.PATCH("/actor/update", server.updateActor)
 	authRoutes.DELETE("/actor/delete", server.deleteActor)
+	authRoutes.GET("/actors-movies", server.actorsWithMovies)
 
 	server.router = router
 }

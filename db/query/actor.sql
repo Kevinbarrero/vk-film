@@ -19,8 +19,16 @@ DELETE FROM actors
 WHERE id = $1;
 
 -- name: GetActorMoviesList :many
-SELECT a.name AS actor_name, m.name AS movie_name
-FROM actors a
-JOIN movie_actors ma ON a.id = ma.actor_id
-JOIN movies m ON ma.movie_id = m.id
-ORDER BY a.name, m.name;
+SELECT
+    a.id AS actor_id,
+    a.name AS actor_name,
+    m.id AS movie_id,
+    m.name AS movie_name
+FROM
+    actors a
+LEFT JOIN
+    movie_actors ma ON a.id = ma.actor_id
+LEFT JOIN
+    movies m ON ma.movie_id = m.id
+ORDER BY
+    a.id, m.id;

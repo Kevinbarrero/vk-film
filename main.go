@@ -1,3 +1,4 @@
+// swagger:meta
 package main
 
 import (
