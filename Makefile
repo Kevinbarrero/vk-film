@@ -8,4 +8,6 @@ migratedown1:
 	migrate -path db/migration -database "postgresql://root:4200@localhost:5432/film-db?sslmode=disable" -verbose down 1
 sqlc:
 	sqlc generate
-.PHONY: migrateup migrateup1 migratedown migratedown1 sqlc
+swagger:
+	swagger serve -F=swagger ./swagger.yaml
+.PHONY: migrateup migrateup1 migratedown migratedown1 sqlc swagger
